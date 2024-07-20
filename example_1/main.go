@@ -54,7 +54,7 @@ func main() {
 		go iterateDownloadImages(data.First, data.LastInt, data.BaseUrl, data.Prefix, data.Folder, &wg)
 	}
 
-	//waiting the all the go routine wait group have been done
+	//waiting all the go routines wait group have been done
 	wg.Wait()
 
 	fmt.Println("Semua proses berakhir")
