@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 )
 
 type dataDownload struct {
@@ -57,17 +58,17 @@ func main() {
 		retrieveData = <-ch //blocking the chanel processing
 		fmt.Println(retrieveData)
 	}
-	fmt.Println("Semua proses berakhir")
+	fmt.Println("All processes completed")
 
 }
 
 func iterateDownloadImages(firstIt, lastIt int, baseUrl, prefix, folder string, ch chan string) {
 	var data string
 
-	fmt.Println("Process ", baseUrl, " start")
+	fmt.Println("Process ", baseUrl, " start ", time.Now().Format(time.DateTime))
 
 	defer func() {
-		fmt.Println("Process ", data, " end")
+		fmt.Println("Process ", data, " end ", time.Now().Format(time.DateTime))
 		ch <- data
 	}()
 

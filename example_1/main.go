@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 type dataDownload struct {
@@ -50,23 +51,25 @@ func main() {
 	}
 
 	for _, data := range dDownload {
-		wg.Add(1)
-		go iterateDownloadImages(data.First, data.LastInt, data.BaseUrl, data.Prefix, data.Folder, &wg)
+		wg.Add(1) // adding waitGroup for every iteration
+		go func() {
+			iterateDownloadImages(data.First, data.LastInt, data.BaseUrl, data.Prefix, data.Folder)
+			wg.Done() // end the wait group for each iteration
+		}()
 	}
 
 	//waiting all the go routines wait group have been done
 	wg.Wait()
 
-	fmt.Println("Semua proses berakhir")
+	fmt.Println("All processes completed")
 
 }
 
-func iterateDownloadImages(firstIt, lastIt int, baseUrl, prefix, folder string, wg *sync.WaitGroup) {
+func iterateDownloadImages(firstIt, lastIt int, baseUrl, prefix, folder string) {
 
-	fmt.Println("Process ", baseUrl, " start")
+	fmt.Println("Process ", baseUrl, " start ", time.Now().Format(time.DateTime))
 	defer func() {
-		fmt.Println("Process ", baseUrl, " end")
-		wg.Done()
+		fmt.Println("Process ", baseUrl, " end ", time.Now().Format(time.DateTime))
 	}()
 
 	count := 1
@@ -79,7 +82,6 @@ func iterateDownloadImages(firstIt, lastIt int, baseUrl, prefix, folder string, 
 		} else {
 			fmt.Println(result)
 		}
-
 		count++
 	}
 

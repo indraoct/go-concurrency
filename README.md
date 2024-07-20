@@ -1,15 +1,7 @@
 # Go Concurrency Example: Download JKT48 Member Photos
- This repository demonstrates the use of concurrency in Go to download images of JKT48 members. The code is structured to efficiently download images from specified URLs concurrently, making use of goroutines and wait groups and chanel.
+ This repository demonstrates the use of concurrency in Go to download images of JKT48 members. The code is structured to efficiently download images from specified URLs concurrently, making use of goroutines and **wait groups** and **chanel**.
 
-## Table of Contents
-- Overview
-- Prerequisites
-- Installation
-- Usage
-- Code Explanation
-- License
-- Overview
-- The main objective of this project is to showcase how Go's concurrency model can be leveraged to download multiple images simultaneously. This example downloads images from three different categories of JKT48 members.
+![Alt text](files/zee/frame_0009.png "Member JKT 48 - Zee")
 
 ## Prerequisites
 - Go installed on your local machine (version 1.20 or higher)
@@ -20,9 +12,20 @@ Clone this repository:
 git clone https://github.com/indraoct/go-concurrency.git
 ```
 Navigate to the project directory:
+
+- example with **sync.WaitGroup**
 ```
 cd go-concurrency/example_1
 ```
+
+or 
+
+- example with chanel
+
+```
+cd go-concurrency/example_2
+```
+
 Usage
 To run the code, simply execute the following command:
 
@@ -206,7 +209,7 @@ func main() {
             fmt.Println(retrieveData)
     }
 	
-    fmt.Println("Semua proses berakhir")
+    fmt.Println("All Processed Completed")
 
 ```
 
