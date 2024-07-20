@@ -1,5 +1,5 @@
 # Go Concurrency Example: Download JKT48 Member Photos
- This repository demonstrates the use of concurrency in Go to download images of JKT48 members. The code is structured to efficiently download images from specified URLs concurrently, making use of goroutines and wait groups.
+ This repository demonstrates the use of concurrency in Go to download images of JKT48 members. The code is structured to efficiently download images from specified URLs concurrently, making use of goroutines and wait groups and chanel.
 
 ## Table of Contents
 - Overview
@@ -12,16 +12,16 @@
 - The main objective of this project is to showcase how Go's concurrency model can be leveraged to download multiple images simultaneously. This example downloads images from three different categories of JKT48 members.
 
 ## Prerequisites
-Go installed on your local machine (version 1.16 or higher)
-Internet connection to download the images
-Installation
+- Go installed on your local machine (version 1.20 or higher)
+- Internet connection to download the images
+- Installation
 Clone this repository:
 ```
-git clone https://github.com/yourusername/go-concurrency-example.git
+git clone https://github.com/indraoct/go-concurrency.git
 ```
 Navigate to the project directory:
 ```
-cd go-concurrency-example
+cd go-concurrency/example_1
 ```
 Usage
 To run the code, simply execute the following command:
@@ -39,7 +39,7 @@ This will start the concurrent download process for the images.
 **downloadImages()**: A function to handle the actual downloading and saving of images to the specified folder.
 Detailed Code Explanation
 Data Structure
-```
+```go
 type dataDownload struct {
 BaseUrl string
 First   int
@@ -59,7 +59,7 @@ This struct holds the necessary details for downloading a series of images:
 
 Main Function
 
-```
+```go
 func main() {
 var dDownload []dataDownload
 
@@ -104,7 +104,7 @@ The main function initializes the download tasks and starts them concurrently us
 
 Iterate and Download Functions
 
-```
+```go
 func iterateDownloadImages(firstIt, lastIt int, baseUrl, prefix, folder string, wg *sync.WaitGroup) {
 defer wg.Done()
 
@@ -157,6 +157,95 @@ filePath := filepath.Join(folder, iterate+".png")
 
 **iterateDownloadImages**: Iterates through the image indices, constructs URLs, and calls downloadImages to download each image.
 **downloadImages**: Handles the downloading of an image from a URL and saves it to the specified folder. It ensures directories are created if they don't exist and handles any errors that occur during the process.
+
+
+## Other Example
+
+I'm using chanel to implement download member JKT48 photos : 
+
+- The main code:
+
+```go
+func main() {
+	var (
+		ch           = make(chan string)
+		retrieveData string
+		dDownload    []dataDownload
+	)
+
+	dDownload = []dataDownload{
+		{
+			BaseUrl: "https://raw.githubusercontent.com/indraoct/go-concurrency/main/files/zee",
+			First:   1,
+			LastInt: 23,
+			Prefix:  "frame_",
+			Folder:  "/Users/indraoctama/Downloads/zee/",
+		},
+		{
+			BaseUrl: "https://raw.githubusercontent.com/indraoct/go-concurrency/main/files/magic_hour",
+			First:   1,
+			LastInt: 96,
+			Prefix:  "magic_hour_",
+			Folder:  "/Users/indraoctama/Downloads/magic_hour/",
+		},
+		{
+			BaseUrl: "https://raw.githubusercontent.com/indraoct/go-concurrency/main/files/ponytail",
+			First:   1,
+			LastInt: 151,
+			Prefix:  "ponytail_",
+			Folder:  "/Users/indraoctama/Downloads/ponytail/",
+		},
+	}
+
+	for _, data := range dDownload {
+		go iterateDownloadImages(data.First, data.LastInt, data.BaseUrl, data.Prefix, data.Folder, ch)
+	}
+
+    for i := 0; i < len(dDownload); i++ {
+            retrieveData = <-ch //blocking the chanel processing
+            fmt.Println(retrieveData)
+    }
+	
+    fmt.Println("Semua proses berakhir")
+
+```
+
+The main function initializes the download tasks and starts them concurrently using goroutines. The chanel is used to block for all goroutines to finish.
+
+
+- download with iteration code :
+```go
+func iterateDownloadImages(firstIt, lastIt int, baseUrl, prefix, folder string, ch chan string) {
+	var data string
+
+	fmt.Println("Process ", baseUrl, " start")
+
+	defer func() {
+		fmt.Println("Process ", data, " end")
+		ch <- data
+	}()
+
+	count := 1
+	for i := firstIt; i <= lastIt; i++ {
+		iteration := prefix + fmt.Sprintf("%04d", i)
+		url := baseUrl + "/" + iteration + ".png"
+		result, err := downloadImages(url, folder, iteration)
+		if err != nil {
+			data = err.Error()
+		} else {
+			data = result + ", count data " + folder + " : " + strconv.Itoa(count) + " success"
+		}
+
+		fmt.Println(data)
+
+		count++
+	}
+}
+
+```
+
+look at the **defer func** part. There is a variable **ch** that receive data from the download logic (string) to state that
+the process for 1 folder download is finish. So the part **retrieveData = <-ch** on the main function will release the blocking.
 
 ## License
 This project is licensed under the MIT License.
