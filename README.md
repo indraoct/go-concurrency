@@ -1,5 +1,5 @@
 # Go Concurrency Example: Download JKT48 Member Photos
-## This repository demonstrates the use of concurrency in Go to download images of JKT48 members. The code is structured to efficiently download images from specified URLs concurrently, making use of goroutines and wait groups.
+ This repository demonstrates the use of concurrency in Go to download images of JKT48 members. The code is structured to efficiently download images from specified URLs concurrently, making use of goroutines and wait groups.
 
 ## Table of Contents
 - Overview
